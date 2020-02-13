@@ -2,7 +2,7 @@
 Repo for issue in VSCode with discovering pytest tests
 
 
-Link: 
+Link: https://github.com/microsoft/vscode-python/issues/10105
 
 ## Environment data
 * VSOnline Container
@@ -14,44 +14,18 @@ Link:
 * Node.js: 12.4.0
 * V8: 7.6.303.31-electron.0
 * OS: Windows_NT x64 10.0.18362
-* Python 3.7.3
-* Python VSCode Extension 2020.2.63072
-* Pytest 5.3.5
+* Python: 3.7.3
+* Python VSCode Extension: 2020.2.63072
+* Pytest: 5.3.5
+* Python Language Server: 0.5.30.0
 
 ## Expected behaviour
 
-2 Test should be discovered in this project. 
+2 pytest tests should be discovered in this project. 
 
 ## Actual behaviour
 
 Test discovery fails.
-
-Log output:
-```
-python /home/vscode/.vscode-remote/extensions/ms-python.python-2020.2.63072/pythonFiles/testing_tools/run_adapter.py discover pytest -- --rootdir /home/vscode/workspace -s --cache-clear tests
-Test Discovery failed: 
-Error: 20/02/13 12:16:01 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
-Using Spark's default log4j profile: org/apache/spark/log4j-defaults.properties
-Setting default log level to "WARN".
-To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
-```
-
-It appears that the output by pyspark interfers with the discovery process. If we run the command manually:
-
-```bash
-python /home/vscode/.vscode-remote/extensions/ms-python.python-2020.2.63072/pythonFiles/testing_tools/run_adapter.py discover pytest -- --rootdir /home/vscode/workspace -s --cache-clear tests
-```
-
-The following output is logged:
-```
-20/02/13 12:17:22 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
-Using Spark's default log4j profile: org/apache/spark/log4j-defaults.properties
-Setting default log level to "WARN".
-To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
-[{"rootid": ".", "root": "/home/vscode/workspace", "parents": [{"id": "./tests", "kind": "folder", "name": "tests", "parentid": ".", "relpath": "./tests"}, {"id": "./tests/test_broken.py", "kind": "file", "name": "test_broken.py", "parentid": "./tests", "relpath": "./tests/test_broken.py"}, {"id": "./tests/test_works.py", "kind": "file", "name": "test_works.py", "parentid": "./tests", "relpath": "./tests/test_works.py"}], "tests": [{"id": "./tests/test_broken.py::test_simple", "name": "test_simple", "source": "./tests/test_broken.py:5", "markers": [], "parentid": "./tests/test_broken.py"}, {"id": "./tests/test_works.py::test_aPlusb", "name": "test_aPlusb", "source": "./tests/test_works.py:4", "markers": [], "parentid": "./tests/test_works.py"}]}]
-```
-
-Here you can see discovery worked - but the logging in front appears to be an issue.
 
 ## Steps to reproduce
 
@@ -77,3 +51,32 @@ Now run Test discovery:
 You should see the error "Test Discovery Failed" in the bottom toolbar. 
 
 If we open ```test_broken.py``` and comment out the import broken.py test discovery works again.
+
+## Logs:
+
+Python Test Log output:
+```
+python /home/vscode/.vscode-remote/extensions/ms-python.python-2020.2.63072/pythonFiles/testing_tools/run_adapter.py discover pytest -- --rootdir /home/vscode/workspace -s --cache-clear tests
+Test Discovery failed: 
+Error: 20/02/13 12:16:01 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+Using Spark's default log4j profile: org/apache/spark/log4j-defaults.properties
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+```
+
+It appears that the output by pyspark interferes with the discovery process. If we run the command manually:
+
+```bash
+python /home/vscode/.vscode-remote/extensions/ms-python.python-2020.2.63072/pythonFiles/testing_tools/run_adapter.py discover pytest -- --rootdir /home/vscode/workspace -s --cache-clear tests
+```
+
+The following output is logged:
+```
+20/02/13 12:17:22 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+Using Spark's default log4j profile: org/apache/spark/log4j-defaults.properties
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+[{"rootid": ".", "root": "/home/vscode/workspace", "parents": [{"id": "./tests", "kind": "folder", "name": "tests", "parentid": ".", "relpath": "./tests"}, {"id": "./tests/test_broken.py", "kind": "file", "name": "test_broken.py", "parentid": "./tests", "relpath": "./tests/test_broken.py"}, {"id": "./tests/test_works.py", "kind": "file", "name": "test_works.py", "parentid": "./tests", "relpath": "./tests/test_works.py"}], "tests": [{"id": "./tests/test_broken.py::test_simple", "name": "test_simple", "source": "./tests/test_broken.py:5", "markers": [], "parentid": "./tests/test_broken.py"}, {"id": "./tests/test_works.py::test_aPlusb", "name": "test_aPlusb", "source": "./tests/test_works.py:4", "markers": [], "parentid": "./tests/test_works.py"}]}]
+```
+
+Here you can see discovery worked - but the logging in front appears to be an issue with the discovery process. Disabling that output is sadly not possible. 
