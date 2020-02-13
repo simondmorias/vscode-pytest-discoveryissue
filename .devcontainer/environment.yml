@@ -1,0 +1,9 @@
+name: pyspark245
+channels:
+  - conda-forge
+dependencies:
+  - python=3.7.3
+  - pytest=5.3.5
+  - pylint
+  - setuptools=40.2.0
+  - pyspark=2.4.5
